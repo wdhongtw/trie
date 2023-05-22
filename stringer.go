@@ -12,11 +12,11 @@ const (
 	formatAsStrings prefixFormat = 1
 )
 
-func (t Trie) String() string {
+func (t TrieGen[T]) String() string {
 	return strings.Join(t.toStrings(formatAsBytes), "\n")
 }
 
-func (t Trie) toStrings(format prefixFormat) []string {
+func (t TrieGen[T]) toStrings(format prefixFormat) []string {
 	var resStrings []string
 	if format == formatAsStrings {
 		resStrings = append(resStrings, fmt.Sprintf("[%s] %v", string(t.Prefix), t.Value))

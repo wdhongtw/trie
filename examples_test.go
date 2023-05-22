@@ -7,7 +7,7 @@ import (
 )
 
 func ExampleBuildPrefixesOnly() {
-	prefixes := BuildPrefixesOnly("tiny_", "small_", "normal_", "large_")
+	prefixes := BuildPrefixesOnly[string]("tiny_", "small_", "normal_", "large_")
 
 	var myString = "large_banana"
 
@@ -21,11 +21,11 @@ func ExampleBuildPrefixesOnly() {
 }
 
 func ExampleTrie_String() {
-	example := &T{Prefix: []byte{0xF0, 0x9F, 0x91}, Value: "short", Children: &[256]*T{
-		0x10: {Prefix: []byte{0x10}, Value: "modified"},
-		0xA8: {Prefix: []byte{0xA8}, Value: "nokey", Children: &[256]*T{
-			0xE2: {Prefix: []byte{0xE2, 0x80, 0x8D}, Value: "withsep", Children: &[256]*T{
-				0xF0: {Prefix: []byte{0xF0, 0x9F, 0x94, 0xA7}, Value: "withkey"},
+	example := &T{Prefix: []byte{0xF0, 0x9F, 0x91}, Value: toAnyPtr("short"), Children: &[256]*T{
+		0x10: {Prefix: []byte{0x10}, Value: toAnyPtr("modified")},
+		0xA8: {Prefix: []byte{0xA8}, Value: toAnyPtr("nokey"), Children: &[256]*T{
+			0xE2: {Prefix: []byte{0xE2, 0x80, 0x8D}, Value: toAnyPtr("withsep"), Children: &[256]*T{
+				0xF0: {Prefix: []byte{0xF0, 0x9F, 0x94, 0xA7}, Value: toAnyPtr("withkey")},
 			}},
 		}},
 	}}
@@ -39,11 +39,11 @@ func ExampleTrie_String() {
 }
 
 func ExampleTrie_Iterate() {
-	example := &T{Prefix: []byte{0xF0, 0x9F, 0x91}, Value: "short", Children: &[256]*T{
-		0x10: {Prefix: []byte{0x10}, Value: "modified"},
-		0xA8: {Prefix: []byte{0xA8}, Value: "nokey", Children: &[256]*T{
-			0xE2: {Prefix: []byte{0xE2, 0x80, 0x8D}, Value: "withsep", Children: &[256]*T{
-				0xF0: {Prefix: []byte{0xF0, 0x9F, 0x94, 0xA7}, Value: "withkey"},
+	example := &T{Prefix: []byte{0xF0, 0x9F, 0x91}, Value: toAnyPtr("short"), Children: &[256]*T{
+		0x10: {Prefix: []byte{0x10}, Value: toAnyPtr("modified")},
+		0xA8: {Prefix: []byte{0xA8}, Value: toAnyPtr("nokey"), Children: &[256]*T{
+			0xE2: {Prefix: []byte{0xE2, 0x80, 0x8D}, Value: toAnyPtr("withsep"), Children: &[256]*T{
+				0xF0: {Prefix: []byte{0xF0, 0x9F, 0x94, 0xA7}, Value: toAnyPtr("withkey")},
 			}},
 		}},
 	}}

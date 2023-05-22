@@ -8,10 +8,15 @@ import (
 	"unicode/utf8"
 )
 
+func toAnyPtr[T any](in T) *any {
+	var wrap any = in
+	return &wrap
+}
+
 func TestTrie_Put(t *testing.T) {
 	tests := []struct {
 		prefix []byte
-		val    ValueType
+		val    any
 	}{
 		{[]byte(`👨‍`), `👨‍`},
 		{[]byte(`👨‍🔧`), `👨‍🔧`},
@@ -26,11 +31,11 @@ func TestTrie_Put(t *testing.T) {
 		tr.Put(tt.prefix, tt.val)
 	}
 
-	var expected = &Trie{Prefix: []byte{0xF0, 0x9F, 0x91}, Value: "short", Children: &[256]*Trie{
-		0x10: {Prefix: []byte{0x10}, Value: "modified"},
-		0xA8: {Prefix: []byte{0xA8}, Value: `👨`, Children: &[256]*Trie{
-			0xE2: {Prefix: []byte{0xE2, 0x80, 0x8D}, Value: `👨‍`, Children: &[256]*Trie{
-				0xF0: {Prefix: []byte{0xF0, 0x9F, 0x94, 0xA7}, Value: `👨‍🔧`},
+	var expected = &Trie{Prefix: []byte{0xF0, 0x9F, 0x91}, Value: toAnyPtr("short"), Children: &[256]*Trie{
+		0x10: {Prefix: []byte{0x10}, Value: toAnyPtr("modified")},
+		0xA8: {Prefix: []byte{0xA8}, Value: toAnyPtr(`👨`), Children: &[256]*Trie{
+			0xE2: {Prefix: []byte{0xE2, 0x80, 0x8D}, Value: toAnyPtr(`👨‍`), Children: &[256]*Trie{
+				0xF0: {Prefix: []byte{0xF0, 0x9F, 0x94, 0xA7}, Value: toAnyPtr(`👨‍🔧`)},
 			}},
 		}},
 	}}
@@ -90,17 +95,17 @@ type T = Trie
 // inputs := []string{"⏰", "✈️", "🆎", "🎟️", "◼"}
 var (
 	tr = T{Prefix: []byte{0xF0, 0x9F, 0x91}, Children: &[256]*T{
-		0xA8: {Prefix: []byte{0xA8}, Value: "👨" /*F0 9F 91 A8*/, Children: &[256]*T{
+		0xA8: {Prefix: []byte{0xA8}, Value: toAnyPtr("👨") /*F0 9F 91 A8*/, Children: &[256]*T{
 			0xE2: {Prefix: []byte{0xE2, 0x80, 0x8D}, Children: &[256]*T{
 				0xE2: {Prefix: []byte{0xE2}, Children: &[256]*T{
 					0x9A: {Prefix: []byte{0x9A}, Children: &[256]*T{
-						0x95: {Prefix: []byte{0x95, 0xEF, 0xB8, 0x8F}, Value: "👨‍⚕️" /*F0 9F 91 A8 E2 80 8D E2 9A 95 EF B8 8F*/},
-						0x96: {Prefix: []byte{0x96, 0xEF, 0xB8, 0x8F}, Value: "👨‍⚖️" /*F0 9F 91 A8 E2 80 8D E2 9A 96 EF B8 8F*/},
+						0x95: {Prefix: []byte{0x95, 0xEF, 0xB8, 0x8F}, Value: toAnyPtr("👨‍⚕️") /*F0 9F 91 A8 E2 80 8D E2 9A 95 EF B8 8F*/},
+						0x96: {Prefix: []byte{0x96, 0xEF, 0xB8, 0x8F}, Value: toAnyPtr("👨‍⚖️") /*F0 9F 91 A8 E2 80 8D E2 9A 96 EF B8 8F*/},
 					}},
-					0x9C: {Prefix: []byte{0x9C, 0x88, 0xEF, 0xB8, 0x8F}, Value: "👨‍✈️" /*F0 9F 91 A8 E2 80 8D E2 9C 88 EF B8 8F*/},
+					0x9C: {Prefix: []byte{0x9C, 0x88, 0xEF, 0xB8, 0x8F}, Value: toAnyPtr("👨‍✈️") /*F0 9F 91 A8 E2 80 8D E2 9C 88 EF B8 8F*/},
 					0x9D: {Prefix: []byte{0x9D, 0xA4, 0xEF, 0xB8, 0x8F, 0xE2, 0x80, 0x8D, 0xF0, 0x9F}, Children: &[256]*T{
-						0x91: {Prefix: []byte{0x91, 0xA8}, Value: "👨‍❤️‍👨" /*F0 9F 91 A8 E2 80 8D E2 9D A4 EF B8 8F E2 80 8D F0 9F 91 A8*/},
-						0x92: {Prefix: []byte{0x92, 0x8B, 0xE2, 0x80, 0x8D, 0xF0, 0x9F, 0x91, 0xA8}, Value: "👨‍❤️‍💋‍👨" /*F0 9F 91 A8 E2 80 8D E2 9D A4 EF B8 8F E2 80 8D F0 9F 92 8B E2 80 8D F0 9F 91 A8*/},
+						0x91: {Prefix: []byte{0x91, 0xA8}, Value: toAnyPtr("👨‍❤️‍👨") /*F0 9F 91 A8 E2 80 8D E2 9D A4 EF B8 8F E2 80 8D F0 9F 91 A8*/},
+						0x92: {Prefix: []byte{0x92, 0x8B, 0xE2, 0x80, 0x8D, 0xF0, 0x9F, 0x91, 0xA8}, Value: toAnyPtr("👨‍❤️‍💋‍👨") /*F0 9F 91 A8 E2 80 8D E2 9D A4 EF B8 8F E2 80 8D F0 9F 92 8B E2 80 8D F0 9F 91 A8*/},
 					}},
 				}},
 			}},
@@ -110,7 +115,7 @@ var (
 
 func TestTrie_SearchPrefixIn(t *testing.T) {
 	var str string
-	var expected = []ValueType{}
+	var expected = []any{}
 
 	var runes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ|!?*+-/*{}[]()_^")
 
@@ -126,7 +131,7 @@ func TestTrie_SearchPrefixIn(t *testing.T) {
 		}
 	})
 
-	var found = make([]ValueType, 0)
+	var found = make([]any, 0)
 	var ind = 0
 	for ind < len(str) {
 		_, size, ok := tr.SearchPrefixIn([]byte(str[ind:]))
@@ -155,7 +160,7 @@ func TestTrie_SearchPrefixIn(t *testing.T) {
 }
 
 func TestTrie_GetAll(t *testing.T) {
-	tr := BuildFromMap(map[string]ValueType{
+	tr := BuildFromMap(map[string]any{
 		"":                "root",
 		"/api/user":       "user",
 		"/api/user/list":  "list",
@@ -184,7 +189,7 @@ func TestTrie_GetAll(t *testing.T) {
 }
 
 func TestTrie_SubTrie(t *testing.T) {
-	tr := BuildPrefixesOnly(
+	tr := BuildPrefixesOnly[any](
 		"",
 		"/api/user",
 		"/api/user/list",
@@ -224,7 +229,7 @@ func TestTrie_SubTrie(t *testing.T) {
 }
 
 func TestTrie_GetByString(t *testing.T) {
-	tr := BuildFromMap(map[string]ValueType{
+	tr := BuildFromMap(map[string]any{
 		"":                       "root",
 		"/api/user":              "user",
 		"/api/user/list":         "users list",
@@ -235,7 +240,7 @@ func TestTrie_GetByString(t *testing.T) {
 	})
 
 	type result struct {
-		Value ValueType
+		Value any
 		OK    bool
 	}
 
@@ -257,7 +262,7 @@ func TestTrie_GetByString(t *testing.T) {
 }
 
 func TestTrie_Count(t *testing.T) {
-	sources := map[string]ValueType{
+	sources := map[string]any{
 		"":                       "root",
 		"/api/user":              "user",
 		"/api/user/list":         "users list",
