@@ -6,12 +6,12 @@ import (
 )
 
 // Also can be created with
-//    prefixes := &trie.Trie{}
-//    prefixes.PutString("one", 1)
-//    prefixes.PutString("two", 2)
-//    prefixes.PutString("three", 3)
-//    prefixes.PutString("", 0)
 //
+//	prefixes := &trie.Trie{}
+//	prefixes.PutString("one", 1)
+//	prefixes.PutString("two", 2)
+//	prefixes.PutString("three", 3)
+//	prefixes.PutString("", 0)
 var prefixes = BuildFromMap(map[string]ValueType{
 	"one":   1,
 	"two":   2,
