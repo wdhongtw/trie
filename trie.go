@@ -356,3 +356,24 @@ func (t *TrieGen[T]) Count() int {
 	}
 	return count
 }
+
+func Fmap[T, U any](convert func(t T) U, in *TrieGen[T]) *TrieGen[U] {
+	if in == nil {
+		return nil
+	}
+
+	out := &TrieGen[U]{}
+	out.Prefix = in.Prefix
+	if in.Value != nil {
+		out.Value = new(U)
+		*out.Value = convert(*in.Value)
+	}
+	if in.Children != nil {
+		out.Children = &[256]*TrieGen[U]{}
+		for idx := 0; idx < 256; idx++ {
+			out.Children[idx] = Fmap(convert, in.Children[idx])
+		}
+	}
+
+	return out
+}
